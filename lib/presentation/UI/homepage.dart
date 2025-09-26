@@ -14,6 +14,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveSize.init(context);
     return Scaffold(
       body: ScreenBackground(
         child: Center(
