@@ -131,6 +131,7 @@ class _FormSideState extends State<FormSide> {
                     );
 
                     final success = await _auth.register(user);
+                    if (!mounted) return;
                     if (success) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -147,6 +148,7 @@ class _FormSideState extends State<FormSide> {
                         MaterialPageRoute(builder: (context) => Login()),
                       );
                     } else {
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Failed to Register, Please try again"),

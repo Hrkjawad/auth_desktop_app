@@ -103,6 +103,7 @@ class _FormSideState extends State<FormSide> {
                         _emailTEController.text,
                         _passwordTEController.text,
                       );
+                      if (!mounted) return;
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -117,6 +118,7 @@ class _FormSideState extends State<FormSide> {
                           MaterialPageRoute(builder: (context) => HomePage()),
                         );
                       } else {
+                        if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("Invalid Email or Password"),
