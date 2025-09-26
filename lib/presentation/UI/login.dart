@@ -1,3 +1,4 @@
+import 'package:auth_desktop_app/presentation/UI/homepage.dart';
 import 'package:auth_desktop_app/presentation/UI/registration.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/background_image.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/custom_buttons.dart';
@@ -5,13 +6,13 @@ import 'package:auth_desktop_app/presentation/UI/widgets/custom_textformfield.da
 import 'package:auth_desktop_app/presentation/UI/widgets/left_image_side.dart';
 import 'package:flutter/material.dart';
 import '../../core/responsive.dart';
+import '../View Model/auth.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
 
   @override
   Widget build(BuildContext context) {
-    ResponsiveSize.init(context);
     return Scaffold(
       body: ScreenBackground(
         child: Center(
@@ -45,13 +46,22 @@ class FormSide extends StatefulWidget {
   State<FormSide> createState() => _FormSideState();
 }
 
-final _formKey = GlobalKey<FormState>();
-
-final _emailTEController = TextEditingController();
-
-final _passwordTEController = TextEditingController();
-
 class _FormSideState extends State<FormSide> {
+  final _auth = Auth();
+
+  final _formKey = GlobalKey<FormState>();
+
+  final _emailTEController = TextEditingController();
+
+  final _passwordTEController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -87,8 +97,34 @@ class _FormSideState extends State<FormSide> {
                   textInputAction: TextInputAction.done,
                 ),
                 CustomElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {}
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final success = await _auth.login(
+                        _emailTEController.text,
+                        _passwordTEController.text,
+                      );
+                      if (success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Login Success"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        _emailTEController.clear();
+                        _passwordTEController.clear();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Invalid Email or Password"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
                   },
                   text: 'LOGIN',
                 ),

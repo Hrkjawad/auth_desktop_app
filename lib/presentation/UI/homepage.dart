@@ -1,9 +1,12 @@
+import 'package:auth_desktop_app/core/app_color.dart';
 import 'package:auth_desktop_app/presentation/UI/registration.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/background_image.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/custom_buttons.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/left_image_side.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import '../../core/responsive.dart';
 
 class HomePage extends StatelessWidget {
@@ -11,7 +14,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ResponsiveSize.init(context);
     return Scaffold(
       body: ScreenBackground(
         child: Center(
@@ -21,7 +23,7 @@ class HomePage extends StatelessWidget {
                     children: [
                       SizedBox(height: 40),
                       ImageSide(width: 80, height: 45),
-                      FormSide(width: 80, height: 80),
+                      Home(width: 80, height: 80),
                     ],
                   ),
                 )
@@ -29,7 +31,7 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ImageSide(width: 50, height: 80),
-                    FormSide(width: 40, height: 80),
+                    Home(width: 40, height: 80),
                   ],
                 ),
         ),
@@ -38,15 +40,32 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class FormSide extends StatefulWidget {
-  const FormSide({super.key, required this.width, required this.height});
+class Home extends StatefulWidget {
+  const Home({super.key, required this.width, required this.height});
   final double width, height;
 
   @override
-  State<FormSide> createState() => _FormSideState();
+  State<Home> createState() => _HomeState();
 }
 
-class _FormSideState extends State<FormSide> {
+class _HomeState extends State<Home> {
+  List<Map<String, dynamic>> users = [];
+
+  @override
+  void initState() {
+    super.initState();
+    databaseFactory = databaseFactoryFfiWeb;
+    loadUsers();
+  }
+
+  void loadUsers() async {
+    final db = await openDatabase('auth.db');
+    final data = await db.query('users');
+    setState(() {
+      users = data;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -78,7 +97,7 @@ class _FormSideState extends State<FormSide> {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(
                     context,
-                  ).showSnackBar(SnackBar(content: Text('Copied')));
+                  ).showSnackBar(SnackBar(content: Text('Copied'), backgroundColor: AppMainColor.primaryColor,));
                 });
               },
               icon: Icon(Icons.copy_all, color: Colors.blue),
@@ -91,6 +110,21 @@ class _FormSideState extends State<FormSide> {
                 );
               },
               text: 'Go to Registration Page',
+            ),
+            SizedBox(
+              height: 500,
+              width: double.infinity,
+              child: ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return ListTile(
+                    leading: CircleAvatar(child: Text(user['id'].toString())),
+                    title: Text('${user['first_name']} ${user['last_name']}'),
+                    subtitle: Text(user['email']),
+                  );
+                },
+              ),
             ),
           ],
         ),

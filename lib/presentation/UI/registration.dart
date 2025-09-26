@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:auth_desktop_app/data/model/user_info.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/background_image.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/custom_buttons.dart';
 import 'package:auth_desktop_app/presentation/UI/widgets/custom_textformfield.dart';
@@ -5,13 +7,13 @@ import 'package:auth_desktop_app/presentation/UI/widgets/left_image_side.dart';
 import 'package:auth_desktop_app/presentation/UI/login.dart';
 import 'package:flutter/material.dart';
 import '../../core/responsive.dart';
+import '../View Model/auth.dart';
 
 class Registration extends StatelessWidget {
   const Registration({super.key});
 
   @override
   Widget build(BuildContext context) {
-    ResponsiveSize.init(context);
     return Scaffold(
       body: ScreenBackground(
         child: Center(
@@ -46,21 +48,32 @@ class FormSide extends StatefulWidget {
   State<FormSide> createState() => _FormSideState();
 }
 
-final _formKey = GlobalKey<FormState>();
-
-final _emailTEController = TextEditingController();
-
-final _firstNameTEController = TextEditingController();
-
-final _lastNameTEController = TextEditingController();
-
-final _passwordTEController = TextEditingController();
-
 class _FormSideState extends State<FormSide> {
+  final _auth = Auth();
+
+  final _formKey2 = GlobalKey<FormState>();
+
+  final _emailTEController = TextEditingController();
+
+  final _passwordTEController = TextEditingController();
+
+  final _firstNameTEController = TextEditingController();
+
+  final _lastNameTEController = TextEditingController();
+
+  @override
+  void dispose() {
+    _firstNameTEController.dispose();
+    _lastNameTEController.dispose();
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: _formKey2,
       child: Container(
         width: ResponsiveSize.w(widget.width),
         height: ResponsiveSize.h(widget.height),
@@ -106,8 +119,42 @@ class _FormSideState extends State<FormSide> {
               ),
               SizedBox(height: 30),
               CustomElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {}
+                onPressed: () async {
+                  Random random = Random();
+                  if (_formKey2.currentState!.validate()) {
+                    final user = UserInfo(
+                      id: random.nextInt(100),
+                      firstName: _firstNameTEController.text,
+                      lastName: _lastNameTEController.text,
+                      email: _emailTEController.text,
+                      password: _passwordTEController.text,
+                    );
+
+                    final success = await _auth.register(user);
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Registered Successfully"),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                      _firstNameTEController.clear();
+                      _lastNameTEController.clear();
+                      _emailTEController.clear();
+                      _passwordTEController.clear();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Failed to Register, Please try again"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
                 },
                 text: 'SIGN UP',
               ),
