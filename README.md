@@ -1,16 +1,31 @@
-# auth_desktop_app
+<h1>auth_web_app</h1>
 
-A new Flutter project.
+<p>A Flutter Responsive Web project with registration, login, and home pages using SQLite database on the web.</p>
 
-## Getting Started
+<h2>About Project</h2>
+<p>
+This project is a simple web authentication system built using Flutter Web. It contains three pages:
+</p>
+<ul>
+<li>Registration Page</li>
+<li>Login Page</li>
+<li>Home Page</li>
+</ul>
+<p>
+The project uses <strong>sqflite_common_ffi_web</strong> for database management on web browsers (Chrome, Edge, etc.) because the default sqflite does not work on web.
+</p>
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<h2>Architecture (MVVM)</h2>
+<p>Project structure:</p>
+<pre>
+lib/
+├─ core/               # App constants, utilities
+├─ data/
+│  ├─ model/           # User model
+│  └─ repository/      # Database repository (register/login)
+├─ presentation/
+│  ├─ UI/
+│  │  └─ widgets/      # Reusable widgets
+│  └─ viewmodel/       # MVVM viewmodels for UI logic
+└─ main.dart            # App entry point
+</pre>
