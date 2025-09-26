@@ -103,7 +103,7 @@ class _FormSideState extends State<FormSide> {
                         _emailTEController.text,
                         _passwordTEController.text,
                       );
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
